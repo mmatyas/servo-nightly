@@ -1,0 +1,39 @@
+language: python
+
+sudo: required
+dist: trusty
+
+addons:
+  apt:
+    packages:
+    - cmake
+    - curl
+    - freeglut3-dev
+    - g++
+    - g++-aarch64-linux-gnu
+    - g++-arm-linux-gnueabihf
+    - gperf
+    - libbz2-dev
+    - libfreetype6-dev
+    - libgl1-mesa-dri
+    - libglib2.0-dev
+    - libglu1-mesa-dev
+    - libosmesa6-dev
+    - libssl-dev
+    - libxmu-dev
+    - libxmu6
+    - python-pip
+    - python-virtualenv
+    - xorg-dev
+
+cache:
+  directories:
+    - .cargo
+    - .servo
+    - $HOME/.ccache
+
+env: CCACHE=/usr/bin/ccache
+
+script:
+  - cd servo
+  - ./mach build --rel --verbose
