@@ -32,11 +32,17 @@ cache:
     - .servo
     - $HOME/.ccache
 
-env: CCACHE=/usr/bin/ccache
+env:
+  global: CCACHE=/usr/bin/ccache
+  matrix:
+  - BUILD_TARGET=x86_64-unknown-linux-gnu
+  - BUILD_TARGET=arm-unknown-linux-gnueabihf
+  - BUILD_TARGET=aarch64-unknown-linux-gnu
 
 before_script:
-  - git clone https://github.com/servo/servo
+  - git clone https://github.com/servo/servo --depth=10
+  - sed -i "s/stdlibs = \[host_triple(), \"arm-linux-androideabi\"\]/stdlibs = set(\[host_triple(), \"arm-linux-androideabi\", \"$BUILD_TARGET\"\])/" servo/python/servo/bootstrap_commands.py
 
 script:
   - cd servo
-  - ./mach build --rel --verbose
+  - ./mach build --rel --target=$BUILD_TARGET
