@@ -40,6 +40,10 @@ env:
   - BUILD_TARGET=aarch64-unknown-linux-gnu
 
 before_script:
+  - mkdir $HOME/bin
+  - for f in /usr/bin/arm-linux-*; do f2=$(basename $f); ln -s $f $HOME/bin/${f2/-linux/-unknown-linux}; done
+  - for f in /usr/bin/aarch64-linux-*; do f2=$(basename $f); ln -s $f $HOME/bin/${f2/-linux/-unknown-linux}; done
+  - PATH="$HOME/bin:$PATH"
   - git clone https://github.com/servo/servo --depth=10
   - sed -i "s/stdlibs = \[host_triple(), \"arm-linux-androideabi\"\]/stdlibs = set(\[host_triple(), \"arm-linux-androideabi\", \"$BUILD_TARGET\"\])/" servo/python/servo/bootstrap_commands.py
 
