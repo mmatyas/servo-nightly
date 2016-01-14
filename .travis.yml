@@ -34,6 +34,9 @@ cache:
 
 env: CCACHE=/usr/bin/ccache
 
+before_script:
+  - git clone https://github.com/servo/servo
+
 script:
   - cd servo
   - ./mach build --rel --verbose
