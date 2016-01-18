@@ -55,13 +55,13 @@ script:
 
 before_deploy:
   - cd $TRAVIS_BUILD_DIR/servo
-  - tar czf servo-$TRIPLET.tgz --transform 's|target/'$BUILD_TARGET'/release/||' target/$BUILD_TARGET/release/servo target/$BUILD_TARGET/release/libservo.rlib resources
+  - tar czf servo-$TRIPLET-$(date '+%Y-%m-%d').tgz --transform 's|target/'$BUILD_TARGET'/release/||' target/$BUILD_TARGET/release/servo target/$BUILD_TARGET/release/libservo.rlib resources
 
 deploy:
   provider: releases
   api_key:
     secure: Hy7xye62EmDnFwpkNiVMML+Tkq31nuAoHTHUdT5nh7R9eYSuUvvkOa3SWnCjyOiQNT1W4o2aPYH7JFX8229pdCPvWixKhFabj251v0RszxfHxXsdSWFeGqoh7nRDQ/ur+m+lZdlpBE1OCTLa66h8mjggv2KJwffbhpRpFH9xyIpD3immG3q681GeLbP7QlR4gt8J3KYyJGCpcFK7SYXM1fEIk7EwHf+usouoqrkA7j3hmjPrifwJv5sOJ4K5V2WgfLVb5xIx6fB3JK7SASswjdUMBYguI1QKhQvK1Shn0TjHWn08mInEf6+s9nfP3QgSsDw+4bfxe0OnxAdRmz9PHLXI9Ij7pH9QVMYTzHRqRIBgQ4VWp0++Kj5rYqVr1W3QyCpZk8AmFVwlCnhC+eXxxtsWWckG/D9xEiBSrghH2fAtVJoMkcRC001FQWG/8u0tTS9G8kYD4Esr6SJyIRk6kUxySERC48+zSJ1Xk56Vikfc36pny3hY3LdNMWCI2GvlddM6EduLgpP2+3N11ljUC2otmkRbRSsyUPgjmpXRcHSp2eCOZ3EWXHDs4FM96z9LpUnJYna2XAop3XIItjle1Gphraqt6wiMaNedjRsvRxmEcQwpyfVSxokQr6T1iDydVgsQPNAPuUSYN3ThdtpoXzol11PKHcRJ7onWwsivR1U=
-  file: $TRAVIS_BUILD_DIR/servo/servo-$TRIPLET.tgz
+  file: $TRAVIS_BUILD_DIR/servo/servo-$TRIPLET-$(date '+%Y-%m-%d').tgz
   skip_cleanup: true
   on:
     tags: true
