@@ -35,7 +35,9 @@ cache:
     - $HOME/.ccache
 
 env:
-  global: CCACHE=/usr/bin/ccache
+  global:
+  - CCACHE=/usr/bin/ccache
+  - secure: "BrOSmP3TOYc0on+agtR00EY0pXas5Y2pNCVAhb+mUR3YP9BZBOG37mYVX1lYUo2Kk4HClb5ocCWqB3LzIkXcUoc9kU3L3ec5dkiXPuHlCi/JOkp09xfxlNQOEPr4D1yZXcw2NyBHxe8NnWjCue8JOdbx4DdSgqTs1g42cjoB3CsrGruxn11GmxTtvQxNcwUcNpBsbZADgO1VQbc/df8fpuTF90zV9AcYKgF9Y5zW+87lQIC3neUsw+8+oR72vtLMvSLfnyGSjxuULN82j+9GUHyoLMuFjiZTmbUpiirW6WYSgHD8Qzg6HsecesQDkktJUzk//stXy9SAqHxXk3dob6Stv3gkYUx9ErGeoe3QKZWTJKgygMJMvkriA1jEcjRA2E6rpSzksnxp4eDfqgOu+SkUmzjHYIL771+tDRSfn5Zipx7zYpAyZmWhl+8lGT+hSzQTjZBvyGHh0N5r7Rq79OmJN5loHlHsd8BlCkfs9BsbYJsIntaApGmEmFUohG5s/i1S8nbGXPIYqfMHHykNX45Wzv08L2HSinw7Y9nflouv0wMGLvAOOdUA+FRsaxdrINgwJSAQjB+57lsCLYuVm2FD4+VxQE/qJbdeSwDdds76gKOrb8R4KlZ77Xl+kOuOXP5tVWSJDnLb8CY7dOiPZXCbn7txoRkYHc6x19E69XY="
   matrix:
   - BUILD_TARGET=x86_64-unknown-linux-gnu TRIPLET=x86_64-linux-gnu
   - BUILD_TARGET=arm-unknown-linux-gnueabihf TRIPLET=arm-linux-gnueabihf PKG_CONFIG_ALLOW_CROSS=1 PKG_CONFIG_PATH=/usr/lib/arm-linux-gnueabihf/pkgconfig
@@ -53,20 +55,9 @@ script:
   - cd servo
   - ./mach build --rel --target=$BUILD_TARGET
 
-before_deploy:
+after_success:
   - cd $TRAVIS_BUILD_DIR/servo
-  - tar czf servo-$TRIPLET-$(date '+%Y-%m-%d').tgz --transform 's|target/'$BUILD_TARGET'/release/||' target/$BUILD_TARGET/release/servo target/$BUILD_TARGET/release/libservo.rlib resources
-
-deploy:
-- provider: releases
-  api_key:
-    secure: Hy7xye62EmDnFwpkNiVMML+Tkq31nuAoHTHUdT5nh7R9eYSuUvvkOa3SWnCjyOiQNT1W4o2aPYH7JFX8229pdCPvWixKhFabj251v0RszxfHxXsdSWFeGqoh7nRDQ/ur+m+lZdlpBE1OCTLa66h8mjggv2KJwffbhpRpFH9xyIpD3immG3q681GeLbP7QlR4gt8J3KYyJGCpcFK7SYXM1fEIk7EwHf+usouoqrkA7j3hmjPrifwJv5sOJ4K5V2WgfLVb5xIx6fB3JK7SASswjdUMBYguI1QKhQvK1Shn0TjHWn08mInEf6+s9nfP3QgSsDw+4bfxe0OnxAdRmz9PHLXI9Ij7pH9QVMYTzHRqRIBgQ4VWp0++Kj5rYqVr1W3QyCpZk8AmFVwlCnhC+eXxxtsWWckG/D9xEiBSrghH2fAtVJoMkcRC001FQWG/8u0tTS9G8kYD4Esr6SJyIRk6kUxySERC48+zSJ1Xk56Vikfc36pny3hY3LdNMWCI2GvlddM6EduLgpP2+3N11ljUC2otmkRbRSsyUPgjmpXRcHSp2eCOZ3EWXHDs4FM96z9LpUnJYna2XAop3XIItjle1Gphraqt6wiMaNedjRsvRxmEcQwpyfVSxokQr6T1iDydVgsQPNAPuUSYN3ThdtpoXzol11PKHcRJ7onWwsivR1U=
-  file: $TRAVIS_BUILD_DIR/servo/servo-$TRIPLET-$(date '+%Y-%m-%d').tgz
-  skip_cleanup: true
-  on:
-    tags: true
-- provider: bintray
-  file: $TRAVIS_BUILD_DIR/.bintray.json
-  user: "mmatyas"
-  key:
-    secure: ff4h0WWkpPvGnSnwM58RBG7SX+/PkcdAWTF4/qkuzcjaayp5H48lMRFx5M08ub0mf6VH+XT/B63lwAvDztaFgOiDwYUmPKwgTMMdueSKAUEpm0cxfASpTWk03Ck9NgKW1GTkK0AGfvREodR8Gs5BEKNfNHILvjFzRxtFmYjvjJE8ENr3wqZvDyLfFyTdA0Rf+E01cbWgk7W5lSosCni76CAtzMFy6BdpxY2AQrGmXRXjkUz635CujbJs3jJJlN+jN7ZdEY3XZCsYzgog3JfsKeLLHNiZYPDS/8PfcpjOtggUefT7lD3cqYG6+gUEbHTnH2bbJ1h2HzaOCrHRxt17yppXyVMH/MzFnVDp2QsNf2TfnnsfJYkokAEIpHIx+piWeU27latH7gZsbIpDZZf0CGKLe8NK36b7CsuIddX3fWRdj/er7XKPTrlbf60bj8A+4nYzzp08ct3UYXNFrZIQVu4Bc/mdQZIvO9YCyyr8xqjzl1i62eO9jdiXTLHXJ64C5ELYDpXmAk4CFuzFJSrQQbPbHXc1qRgGGFuAINqBVIVKSsx/3F41MNewcrnBFAj/elkidoSbB5EzxhOzkoC5TJGc+lzH1Vyb/K6btM22/d3BhnOF337CTfD+6cNCueLDA9nPxYt2g4qf/Q+Q2VLO1icb1a9q5cqknWihwrB1sMs=
+  - export ASSET_NAME=servo-$TRIPLET-$(date '+%Y-%m-%d').tgz
+  - tar czf $ASSET_NAME --transform 's|target/'$BUILD_TARGET'/release/||' target/$BUILD_TARGET/release/servo target/$BUILD_TARGET/release/libservo.rlib resources
+  - cd ..
+  - ./upload_to_github.py
