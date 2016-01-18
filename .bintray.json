@@ -1,0 +1,17 @@
+{
+    "package": {
+        "name": "servo-nightly",
+        "repo": "generic",
+        "subject": "mmatyas"
+    },
+
+    "version": {
+        "name": "nightly"
+    },
+
+    "files":
+        [
+        {"includePattern": "servo/servo-(.*\.tgz)", "uploadPattern": "servo-$1"}
+        ],
+    "publish": true
+}

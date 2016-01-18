@@ -58,10 +58,15 @@ before_deploy:
   - tar czf servo-$TRIPLET-$(date '+%Y-%m-%d').tgz --transform 's|target/'$BUILD_TARGET'/release/||' target/$BUILD_TARGET/release/servo target/$BUILD_TARGET/release/libservo.rlib resources
 
 deploy:
-  provider: releases
+- provider: releases
   api_key:
     secure: Hy7xye62EmDnFwpkNiVMML+Tkq31nuAoHTHUdT5nh7R9eYSuUvvkOa3SWnCjyOiQNT1W4o2aPYH7JFX8229pdCPvWixKhFabj251v0RszxfHxXsdSWFeGqoh7nRDQ/ur+m+lZdlpBE1OCTLa66h8mjggv2KJwffbhpRpFH9xyIpD3immG3q681GeLbP7QlR4gt8J3KYyJGCpcFK7SYXM1fEIk7EwHf+usouoqrkA7j3hmjPrifwJv5sOJ4K5V2WgfLVb5xIx6fB3JK7SASswjdUMBYguI1QKhQvK1Shn0TjHWn08mInEf6+s9nfP3QgSsDw+4bfxe0OnxAdRmz9PHLXI9Ij7pH9QVMYTzHRqRIBgQ4VWp0++Kj5rYqVr1W3QyCpZk8AmFVwlCnhC+eXxxtsWWckG/D9xEiBSrghH2fAtVJoMkcRC001FQWG/8u0tTS9G8kYD4Esr6SJyIRk6kUxySERC48+zSJ1Xk56Vikfc36pny3hY3LdNMWCI2GvlddM6EduLgpP2+3N11ljUC2otmkRbRSsyUPgjmpXRcHSp2eCOZ3EWXHDs4FM96z9LpUnJYna2XAop3XIItjle1Gphraqt6wiMaNedjRsvRxmEcQwpyfVSxokQr6T1iDydVgsQPNAPuUSYN3ThdtpoXzol11PKHcRJ7onWwsivR1U=
   file: $TRAVIS_BUILD_DIR/servo/servo-$TRIPLET-$(date '+%Y-%m-%d').tgz
   skip_cleanup: true
   on:
     tags: true
+- provider: bintray
+  file: $TRAVIS_BUILD_DIR/.bintray.json
+  user: "mmatyas"
+  key:
+    secure: ff4h0WWkpPvGnSnwM58RBG7SX+/PkcdAWTF4/qkuzcjaayp5H48lMRFx5M08ub0mf6VH+XT/B63lwAvDztaFgOiDwYUmPKwgTMMdueSKAUEpm0cxfASpTWk03Ck9NgKW1GTkK0AGfvREodR8Gs5BEKNfNHILvjFzRxtFmYjvjJE8ENr3wqZvDyLfFyTdA0Rf+E01cbWgk7W5lSosCni76CAtzMFy6BdpxY2AQrGmXRXjkUz635CujbJs3jJJlN+jN7ZdEY3XZCsYzgog3JfsKeLLHNiZYPDS/8PfcpjOtggUefT7lD3cqYG6+gUEbHTnH2bbJ1h2HzaOCrHRxt17yppXyVMH/MzFnVDp2QsNf2TfnnsfJYkokAEIpHIx+piWeU27latH7gZsbIpDZZf0CGKLe8NK36b7CsuIddX3fWRdj/er7XKPTrlbf60bj8A+4nYzzp08ct3UYXNFrZIQVu4Bc/mdQZIvO9YCyyr8xqjzl1i62eO9jdiXTLHXJ64C5ELYDpXmAk4CFuzFJSrQQbPbHXc1qRgGGFuAINqBVIVKSsx/3F41MNewcrnBFAj/elkidoSbB5EzxhOzkoC5TJGc+lzH1Vyb/K6btM22/d3BhnOF337CTfD+6cNCueLDA9nPxYt2g4qf/Q+Q2VLO1icb1a9q5cqknWihwrB1sMs=
