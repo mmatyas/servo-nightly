@@ -110,7 +110,7 @@ def upload_and_replace_archive(release_id, upload_url):
 
 if __name__ == "__main__":
     release_api_url = 'https://api.github.com/repos/mmatyas/servo-nightly/releases'
-    subprocess.check_call(['git', 'remote', 'set-url', 'origin', 'https://' + os.environ['GITHUB_TOKEN'] + '@github.com:mmatyas/servo-nightly.git'])
+    subprocess.check_call(['git', 'remote', 'set-url', 'origin', 'https://' + os.environ['GITHUB_TOKEN'] + '@github.com/mmatyas/servo-nightly.git'])
 
     last_tag = create_new_git_tag_if_not_latest()
     print "Latest tag: " + last_tag
