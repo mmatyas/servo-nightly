@@ -16,12 +16,12 @@ def delete_github_release(tagname):
 
 def delete_git_tag(tagname):
     subprocess.check_call(['git', 'tag', '-d', tagname])
-    subprocess.check_call(['git', 'push', 'origin_auth', ':refs/tags/' + tagname])
+    subprocess.check_call(['git', 'push', 'origin', ':refs/tags/' + tagname])
 
 
 def create_git_tag(tagname):
     subprocess.check_call(['git', 'tag', tagname])
-    subprocess.check_call(['git', 'push', 'origin_auth', '--tags'])
+    subprocess.check_call(['git', 'push', 'origin', '--tags'])
 
 
 def delete_all_git_tags():
