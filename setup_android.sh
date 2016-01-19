@@ -17,3 +17,6 @@ mkdir $ANDROID_TOOLCHAIN
 $ANDROID_NDK/build/tools/make-standalone-toolchain.sh --platform="android-18" --toolchain=arm-linux-androideabi-4.8 --install-dir=$ANDROID_TOOLCHAIN --ndk-dir=$ANDROID_NDK --arch=arm
 
 export PATH="$PATH:$ANDROID_TOOLCHAIN/bin"
+
+# Test
+arm-linux-androideabi-gcc -v
