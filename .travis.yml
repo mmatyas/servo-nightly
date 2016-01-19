@@ -77,7 +77,7 @@ script:
 
 after_success:
   - cd $TRAVIS_BUILD_DIR/servo
-  - export ASSET_NAME=servo_$TRIPLET_$(date '+%Y-%m-%d').tgz
+  - export ASSET_NAME=servo_${TRIPLET}_$(date '+%Y-%m-%d').tgz
   - if [[ "$BUILD_TARGET" == "arm-linux-androideabi" ]]; then ./mach package --release; fi
   - if [[ "$BUILD_TARGET" == "arm-linux-androideabi" ]]; then tar czf $ASSET_NAME --transform 's|target/'$BUILD_TARGET'/release/||' target/$BUILD_TARGET/release/servo.apk resources; fi
   - if [[ "$BUILD_TARGET" != "arm-linux-androideabi" ]]; then tar czf $ASSET_NAME --transform 's|target/'$BUILD_TARGET'/release/||' target/$BUILD_TARGET/release/servo target/$BUILD_TARGET/release/libservo.rlib resources; fi
