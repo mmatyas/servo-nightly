@@ -71,7 +71,7 @@ if __name__ == "__main__":
     release_api_url = 'https://api.github.com/repos/mmatyas/servo-nightly/releases'
     subprocess.check_call(['git', 'fetch', '--tags'])
 
-    last_tag = subprocess.check_output(['git', 'describe', '--abbrev=0', '--tags'])
+    last_tag = subprocess.check_output(['git', 'describe', '--abbrev=0', '--tags']).strip()
     print "Latest tag: " + last_tag
 
     release_id, upload_url = create_github_release_if_not_exists(last_tag)
