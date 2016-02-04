@@ -45,33 +45,67 @@ env:
   global:
   - CCACHE=/usr/bin/ccache
   - secure: "gBwC2ZbWXWO56NhGPtJMAO+kBRHzU9YoiA52QCbR2GqKOYqAyWZeCh5UYqxY6dCMA+vXXhZsKXrZ0847wIpGyParp7VkZ51wE0r0Ngp0tMUG7lmnV6wJEkWB8mrAOpz13qkBK/8UB4rXcTrIFXXO9m+M+EPXGPUsOBUGCg6ev3WUSVC+EBDM7JPbnjuWreyVNlL6nm66GCjDoe/Rwp1x8hLz3FZq40A/3Xee/Xh68aBZCaKKU15+srXet/foWMOWkuLrNkuXKiZtUnB+t4ucaaj3qUIPX4LyII4PV1W+DAcwXghPn2I7VzjDxqK5c+XCB4lZIry22V7Z5j3iujegYdZHolvVgb4Y8w5e/Uf9BfZzHaHbtwyrb8hNZnbKKMWfvuoc2fE2a91cSaybwDpDuVSC4acqXlRLvPFLTI9K0FARakH5//n0Y//xNyBxmEKb22oe6M4J/Regs5pS3Ln0INRSp1LEZVHLunTVLiG8GBy84md8FM/nQ1xXwfva6LJd3IjaZyDSEwSv1ceabawuKZoHbDM7Nq0gQ+Yex3OW9if5OG9OzJYUhfLMEyRgWRn2saiL5etsoNyno1hQOWBDyOeE/9wlAsTUdb/frnSF71EiO02k9bUSYPkZky6MjHGJb4DvHU104RKN+0jBHj9a3+AxzghhCCi7IAWtf922WS0="
-  matrix:
-  - BUILD_TARGET=x86_64-unknown-linux-gnu TRIPLET=x86_64-linux-gnu
-  - BUILD_TARGET=arm-unknown-linux-gnueabihf TRIPLET=arm-linux-gnueabihf PKG_CONFIG_ALLOW_CROSS=1 PKG_CONFIG_PATH=/usr/lib/arm-linux-gnueabihf/pkgconfig EXPAT_NO_PKG_CONFIG=1
-  - BUILD_TARGET=aarch64-unknown-linux-gnu TRIPLET=aarch64-linux-gnu PKG_CONFIG_ALLOW_CROSS=1 PKG_CONFIG_PATH=/usr/lib/aarch64-linux-gnu/pkgconfig EXPAT_NO_PKG_CONFIG=1
-  - BUILD_TARGET=arm-linux-androideabi TRIPLET=arm-linux-androideabi
 
 matrix:
   include:
-  - before_script:
-    - git clone https://github.com/servo/servo --depth=1
+  # Source only
+  - env:
+    - BUILD_TARGET=source
     script:
+    - git clone https://github.com/servo/servo --depth=1
     - export ASSET_NAME=servo_source_$(date '+%Y-%m-%d').tgz
     - tar czf $ASSET_NAME servo --exclude-vcs --exclude='tests'
     - mv $ASSET_NAME servo/
     after_success:
     - ./upload_to_github.py
 
-before_script:
-  - mkdir $HOME/bin
-  - for f in /usr/bin/arm-linux-*; do f2=$(basename $f); ln -s $f $HOME/bin/${f2/-linux/-unknown-linux}; done
-  - for f in /usr/bin/aarch64-linux-*; do f2=$(basename $f); ln -s $f $HOME/bin/${f2/-linux/-unknown-linux}; done
-  - PATH="$PATH:$HOME/bin"
-  - git clone https://github.com/servo/servo --depth=10
-  - sed -i "s/stdlibs = \[host_triple(), \"arm-linux-androideabi\"\]/stdlibs = set(\[host_triple(), \"arm-linux-androideabi\", \"$BUILD_TARGET\"\])/" servo/python/servo/bootstrap_commands.py
-  - if [[ "$BUILD_TARGET" == "arm-linux-androideabi" ]]; then source setup_android.sh; fi
+  # x86_64
+  - env:
+    - BUILD_TARGET=x86_64-unknown-linux-gnu TRIPLET=x86_64-linux-gnu
+
+  # ARM
+  - env:
+    - BUILD_TARGET=arm-unknown-linux-gnueabihf TRIPLET=arm-linux-gnueabihf
+    - PKG_CONFIG_ALLOW_CROSS=1 PKG_CONFIG_PATH=/usr/lib/arm-linux-gnueabihf/pkgconfig
+    - OPENSSL_LIB_DIR=/usr/lib/arm-linux-gnueabihf OPENSSL_INCLUDE_DIR=/usr/include/arm-linux-gnueabihf
+    before_script:
+    - mkdir $HOME/bin
+    - for f in /usr/bin/arm-linux-*; do f2=$(basename $f); ln -s $f $HOME/bin/${f2/-linux/-unknown-linux}; done
+    # download and link system libs
+    - wget https://github.com/mmatyas/mmatyas.github.io/releases/download/arm-libs/armhf-trusty-libs.tgz
+    - tar xzf armhf-trusty-libs.tgz
+    - sudo ln -s $(pwd)/rootfs-trusty-armhf/usr/include/arm-linux-gnueabihf /usr/include/arm-linux-gnueabihf
+    - sudo ln -s $(pwd)/rootfs-trusty-armhf/usr/lib/arm-linux-gnueabihf /usr/lib/arm-linux-gnueabihf
+    - sudo ln -s $(pwd)/rootfs-trusty-armhf/lib/arm-linux-gnueabihf /lib/arm-linux-gnueabihf
+
+  # AArch64
+  - env:
+    - BUILD_TARGET=aarch64-unknown-linux-gnu TRIPLET=aarch64-linux-gnu
+    - PKG_CONFIG_ALLOW_CROSS=1 PKG_CONFIG_PATH=/usr/lib/aarch64-linux-gnu/pkgconfig
+    - EXPAT_NO_PKG_CONFIG=1 FREETYPE2_NO_PKG_CONFIG=1 FONTCONFIG_NO_PKG_CONFIG=1
+    - OPENSSL_LIB_DIR=/usr/lib/aarch64-linux-gnu OPENSSL_INCLUDE_DIR=/usr/include/aarch64-linux-gnu
+    before_script:
+    - mkdir $HOME/bin
+    - for f in /usr/bin/aarch64-linux-*; do f2=$(basename $f); ln -s $f $HOME/bin/${f2/-linux/-unknown-linux}; done
+    # download and link system libs
+    - wget https://github.com/mmatyas/mmatyas.github.io/releases/download/arm-libs/arm64-trusty-libs.tgz
+    - tar xzf arm64-trusty-libs.tgz
+    - sudo ln -s $(pwd)/rootfs-trusty-arm64/usr/include/aarch64-linux-gnu /usr/include/aarch64-linux-gnu
+    - sudo ln -s $(pwd)/rootfs-trusty-arm64/usr/lib/aarch64-linux-gnu /usr/lib/aarch64-linux-gnu
+    - sudo ln -s $(pwd)/rootfs-trusty-arm64/lib/aarch64-linux-gnu /lib/aarch64-linux-gnu
+
+  # Android
+  - env:
+    - BUILD_TARGET=arm-linux-androideabi TRIPLET=arm-linux-androideabi
+    before_script:
+    - source setup_android.sh
 
 script:
+  - export CC=$TRIPLET-gcc
+  - export CXX=$TRIPLET-g++
+  - export PATH="$PATH:$HOME/bin"
+  - git clone https://github.com/servo/servo --depth=10
+  - sed -i "s/stdlibs = \[host_triple(), \"arm-linux-androideabi\"\]/stdlibs = set(\[host_triple(), \"arm-linux-androideabi\", \"$BUILD_TARGET\"\])/" servo/python/servo/bootstrap_commands.py
   - cd servo
   - ./mach build --rel --target=$BUILD_TARGET
 
