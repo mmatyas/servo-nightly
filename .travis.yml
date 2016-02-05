@@ -67,13 +67,14 @@ matrix:
   - env:
     - BUILD_TARGET=arm-unknown-linux-gnueabihf TRIPLET=arm-linux-gnueabihf
     - PKG_CONFIG_ALLOW_CROSS=1 PKG_CONFIG_PATH=/usr/lib/arm-linux-gnueabihf/pkgconfig
-    - OPENSSL_LIB_DIR=/usr/lib/arm-linux-gnueabihf OPENSSL_INCLUDE_DIR=/usr/include/arm-linux-gnueabihf
+    - EXPAT_NO_PKG_CONFIG=1 FREETYPE2_NO_PKG_CONFIG=1 FONTCONFIG_NO_PKG_CONFIG=1
     before_script:
     - mkdir $HOME/bin
     - for f in /usr/bin/arm-linux-*; do f2=$(basename $f); ln -s $f $HOME/bin/${f2/-linux/-unknown-linux}; done
     # download and link system libs
     - wget https://github.com/mmatyas/mmatyas.github.io/releases/download/arm-libs/armhf-trusty-libs.tgz
-    - tar xzf armhf-trusty-libs.tgz
+    - mkdir rootfs-trusty-armhf
+    - tar xzf armhf-trusty-libs.tgz -C rootfs-trusty-armhf
     - sudo ln -s $(pwd)/rootfs-trusty-armhf/usr/include/arm-linux-gnueabihf /usr/include/arm-linux-gnueabihf
     - sudo ln -s $(pwd)/rootfs-trusty-armhf/usr/lib/arm-linux-gnueabihf /usr/lib/arm-linux-gnueabihf
     - sudo ln -s $(pwd)/rootfs-trusty-armhf/lib/arm-linux-gnueabihf /lib/arm-linux-gnueabihf
@@ -83,13 +84,13 @@ matrix:
     - BUILD_TARGET=aarch64-unknown-linux-gnu TRIPLET=aarch64-linux-gnu
     - PKG_CONFIG_ALLOW_CROSS=1 PKG_CONFIG_PATH=/usr/lib/aarch64-linux-gnu/pkgconfig
     - EXPAT_NO_PKG_CONFIG=1 FREETYPE2_NO_PKG_CONFIG=1 FONTCONFIG_NO_PKG_CONFIG=1
-    - OPENSSL_LIB_DIR=/usr/lib/aarch64-linux-gnu OPENSSL_INCLUDE_DIR=/usr/include/aarch64-linux-gnu
     before_script:
     - mkdir $HOME/bin
     - for f in /usr/bin/aarch64-linux-*; do f2=$(basename $f); ln -s $f $HOME/bin/${f2/-linux/-unknown-linux}; done
     # download and link system libs
     - wget https://github.com/mmatyas/mmatyas.github.io/releases/download/arm-libs/arm64-trusty-libs.tgz
-    - tar xzf arm64-trusty-libs.tgz
+    - mkdir rootfs-trusty-arm64
+    - tar xzf arm64-trusty-libs.tgz -C rootfs-trusty-arm64
     - sudo ln -s $(pwd)/rootfs-trusty-arm64/usr/include/aarch64-linux-gnu /usr/include/aarch64-linux-gnu
     - sudo ln -s $(pwd)/rootfs-trusty-arm64/usr/lib/aarch64-linux-gnu /usr/lib/aarch64-linux-gnu
     - sudo ln -s $(pwd)/rootfs-trusty-arm64/lib/aarch64-linux-gnu /lib/aarch64-linux-gnu
